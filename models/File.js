@@ -7,6 +7,11 @@ const fileSchema = new mongoose.Schema(
         uuid: { type: String, required: true, unique: true, index: true },
         sender: { type: String, required: false },
         receiver: { type: String, required: false },
+        expiresAt:{
+            type:Date,
+            default:()=>new Date(Date.now()+1000*60*60*24),
+            index:true
+        }
     },
     { timestamps: true },
 );

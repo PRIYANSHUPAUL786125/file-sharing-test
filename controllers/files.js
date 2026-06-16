@@ -10,7 +10,7 @@ const uploadfile = asyncHandler(async (req, res) => {
     if (!req.file) {
         throw new ApiError(400, "file is required");
     }
-    console.log(uuid.v4());
+    // console.log(uuid.v4());
     const file = await File.create({
         filename: req.file.filename,
         uuid: uuid.v4(),
