@@ -63,14 +63,5 @@ const sendFile = asyncHandler(async (req, res) => {
     });
     res.status(201).json(new ApiResponse(201, "email send successfully"));
 });
+// const previewFile=asyncHandler(async (req,res))
 module.exports = { uploadfile, showfile, sendFile };
-// {
-//   fieldname: 'myfile',
-//   originalname: '2687204.jpg',
-//   encoding: '7bit',
-//   mimetype: 'image/jpeg',
-//   path: 'uploads/1781541128408-795627970.jpg',
-//   destination: 'uploads/',
-//   filename: '1781541128408-795627970.jpg',
-//   size: 1721168
-// }
