@@ -86,14 +86,9 @@ const callbackFunction = asyncHandler(async (req, res) => {
     res.clearCookie("google_oauth_state", COOKIE_SETTINGS);
     res.clearCookie("google_code_verifier", COOKIE_SETTINGS);
 
-    // ✅ Cross-origin redirect: browsers silently drop Set-Cookie headers on
-    // cross-site 302 responses (Render → Vercel). Pass tokens as short-lived
-    // URL params instead. The frontend extracts & stores them, then clears
-    // the URL. All subsequent API calls use Authorization: Bearer <token>.
-    const redirectUrl = new URL(process.env.REACT_URL);
-    redirectUrl.searchParams.set("accessToken", accessToken);
-    redirectUrl.searchParams.set("refreshToken", refreshToken);
-    res.redirect(redirectUrl.toString());
+    res.cookie("refreshToken", refreshToken, COOKIE_SETTINGS);
+    res.cookie("accessToken", accessToken, COOKIE_SETTINGS);
+    res.redirect(process.env.REACT_URL);
 });
 const refreshTokenController = asyncHandler(async (req, res) => {
     const incomingRefreshToken = req.cookies.refreshToken;
