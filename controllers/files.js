@@ -20,7 +20,7 @@ const uploadfile = asyncHandler(async (req, res) => {
     res.status(201).json(
         new ApiResponse(201, {
             file,
-            url: `${process.env.APP_BASE_URL}/files/${file.uuid}`,
+            url: `${process.env.APP_BASE_URL}/files/download/${file.uuid}`,
         }),
     );
 });
@@ -38,12 +38,15 @@ const showfile = asyncHandler(async (req, res) => {
     res.download(fileLocation, file.filename);
 });
 const sendFile = asyncHandler(async (req, res) => {
-    console.log(req.body);
-    const { uuid, emailTo, emailFrom, expiresIn } = req.body;
-    if (!uuid || !emailTo || !emailFrom) {
+    const emailFrom=req.user.payload.email
+    const { uuid, emailTo,  expiresIn } = req.body;
+    if (!uuid || !emailTo ) {
         throw new ApiError(422, "all fields are required");
     }
     const file = await File.findOne({ uuid: uuid });
+    if(!file){
+        throw new ApiError(401,"file donot exists");
+    }
     if (file.sender) {
         return res.status(422).send({ error: "Email already sent once." });
     }

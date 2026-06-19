@@ -1,3 +1,4 @@
+const { decode } = require("jsonwebtoken");
 const ApiError = require("../utils/apiError.js"); 
 const asyncHandler = require("../utils/asyncHandler.js");
 const { verifyAccessToken } = require("../utils/tokenutils.js");
@@ -15,6 +16,7 @@ const protect = asyncHandler(async (req, res, next) => {
     if (!token && req.cookies) {
         token = req.cookies.accessToken;
     }
+// { valid: false, expired: true, payload: null }
 
     if (!token) {
         throw new ApiError(401, "Not authorized to access this route. Token missing.");
@@ -22,7 +24,7 @@ const protect = asyncHandler(async (req, res, next) => {
 
     const decoded = verifyAccessToken(token);
     
-    if (!decoded) {
+    if (!decoded || !decoded.valid || decoded.expired ) {
         throw new ApiError(401, "Token has expired or is invalid.");
     }
 

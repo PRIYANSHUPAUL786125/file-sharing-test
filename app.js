@@ -11,7 +11,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 app.use("/api/files", fileRoute);
-app.use(loginRoute);
+app.use("/api/auth",loginRoute);
 connectDB();
 app.listen(port, () => {
     console.log("listening to port", port);
