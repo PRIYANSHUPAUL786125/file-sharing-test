@@ -42,7 +42,7 @@ const loginRoute = asyncHandler(async (req, res) => {
 const COOKIE_SETTINGS = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    sameSite: "none",
     path: "/",
 };
 const callbackFunction = asyncHandler(async (req, res) => {
