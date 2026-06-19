@@ -10,6 +10,7 @@ const loginRoute=require("./routes/user.js");
 const errorMiddleware=require('./middlewares/error.middleware.js');
 require("./utils/cron.js");
 app.use(express.urlencoded({ extended: true }));
+app.set("trust proxy", 1); // 👈 ADD THIS LINE HERE!
 app.use(cors({
     origin:'https://project-5tw7a-plydefleu-paul12345.vercel.app',
     credentials:true,

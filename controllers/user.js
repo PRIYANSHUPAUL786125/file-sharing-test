@@ -15,6 +15,12 @@ const {
     generateTokenPair,
     verifyRefreshToken,
 } = require("../utils/tokenutils.js");
+const COOKIE_SETTINGS = {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+    path: "/",
+}
 const loginRoute = asyncHandler(async (req, res) => {
     const state = generateState();
     const codeVerifier = generateCodeVerifier();
@@ -23,28 +29,13 @@ const loginRoute = asyncHandler(async (req, res) => {
     // console.log(google);
     const url = google.createAuthorizationURL(state, codeVerifier, scopes);
 
-    res.cookie("google_oauth_state", state, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        maxAge: 10 * 60 * 1000,
-        path: "/",
-    });
+    res.cookie("google_oauth_state", state, COOKIE_SETTINGS);
 
-    res.cookie("google_code_verifier", codeVerifier, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        maxAge: 10 * 60 * 1000,
-        path: "/",
-    });
+    res.cookie("google_code_verifier", codeVerifier, COOKIE_SETTINGS);
 
     res.redirect(url.toString());
 });
-const COOKIE_SETTINGS = {
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
-    path: "/",
-};
+;
 const callbackFunction = asyncHandler(async (req, res) => {
     const code = req.query.code;
     const state = req.query.state;
