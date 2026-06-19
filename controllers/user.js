@@ -39,7 +39,12 @@ const loginRoute = asyncHandler(async (req, res) => {
 
     res.redirect(url.toString());
 });
-
+const COOKIE_SETTINGS = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+};
 const callbackFunction = asyncHandler(async (req, res) => {
     const code = req.query.code;
     const state = req.query.state;
@@ -90,20 +95,16 @@ const callbackFunction = asyncHandler(async (req, res) => {
     res.clearCookie("google_oauth_state");
     res.clearCookie("google_code_verifier");
 
-    res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days matching your token expiry
-    });
-
+    res.cookie("refreshToken", refreshToken, COOKIE_SETTINGS);
+     res.cookie("accessToken", accessToken,COOKIE_SETTINGS);
     const message = isNewUser
         ? "Account created and logged in successfully"
         : "Logged in successfully";
-
-    return res
-        .status(200) 
-        .json(new ApiResponse(200, { accessToken }, message));
+    console.log(process.env.REACT_URL);
+    res.redirect(process.env.REACT_URL);
+    // return res
+    // .status(200)
+    // .json(new ApiResponse(200, { accessToken }, message));
 });
 const refreshTokenController = asyncHandler(async (req, res) => {
     const incomingRefreshToken = req.cookies.refreshToken;
@@ -115,6 +116,7 @@ const refreshTokenController = asyncHandler(async (req, res) => {
         );
     }
 
+    // console.log(incomingRefreshToken)
     const decoded = verifyRefreshToken(incomingRefreshToken);
     if (!decoded) {
         throw new ApiError(403, "Refresh token is invalid or expired.");
@@ -133,13 +135,8 @@ const refreshTokenController = asyncHandler(async (req, res) => {
 
     user.refreshToken = newRefreshToken;
     await user.save();
-    res.cookie("refreshToken", newRefreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-
+    res.cookie("refreshToken", newRefreshToken, COOKIE_SETTINGS);
+    res.cookie("accessToken", accessToken, COOKIE_SETTINGS);
     return res
         .status(200)
         .json(
@@ -150,31 +147,34 @@ const refreshTokenController = asyncHandler(async (req, res) => {
             ),
         );
 });
+
 const logoutController = asyncHandler(async (req, res) => {
     const incomingRefreshToken = req.cookies.refreshToken;
 
     if (incomingRefreshToken) {
         const decoded = verifyRefreshToken(incomingRefreshToken);
-        
+
         if (decoded) {
             await User.findByIdAndUpdate(
                 decoded.userId,
                 { $set: { refreshToken: null } }, // Or remove the field entirely
-                { new: true }
+                { new: true },
             );
         }
     }
 
-    const cookieOptions = {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict"
-    };
+   
 
-    res.clearCookie("refreshToken", cookieOptions);
-    
+    res.clearCookie("refreshToken", COOKIE_SETTINGS);
+    res.clearCookie("accessToken", COOKIE_SETTINGS);
+
     return res
         .status(200)
         .json(new ApiResponse(200, {}, "Logged out successfully"));
 });
-module.exports = { loginRoute, callbackFunction, refreshTokenController,logoutController };
+module.exports = {
+    loginRoute,
+    callbackFunction,
+    refreshTokenController,
+    logoutController,
+};
