@@ -42,7 +42,10 @@ const callbackFunction = asyncHandler(async (req, res) => {
 
     const storedState = req.cookies.google_oauth_state;
     const storedCodeVerifier = req.cookies.google_code_verifier;
-
+console.log("cookies:", req.cookies);
+console.log("storedState:", storedState);
+console.log("storedCodeVerifier:", storedCodeVerifier);
+console.log("incomingState:", state);
     if (
         !code ||
         !state ||
