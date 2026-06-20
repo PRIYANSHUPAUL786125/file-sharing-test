@@ -90,6 +90,7 @@ const callbackFunction = asyncHandler(async (req, res) => {
     console.log("adding access and refresh token");
     res.cookie("refreshToken", refreshToken, COOKIE_SETTINGS);
     res.cookie("accessToken", accessToken, COOKIE_SETTINGS);
+    console.log(res.getHeaders());
     res.redirect(process.env.REACT_URL);
 });
 const refreshTokenController = asyncHandler(async (req, res) => {
