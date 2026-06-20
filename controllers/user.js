@@ -20,6 +20,7 @@ const COOKIE_SETTINGS = {
     secure: true,
     sameSite: "none",
     path: "/",
+    maxAge: 24 * 60 * 60 * 1000, // 1 day is plenty
 };
 const loginRoute = asyncHandler(async (req, res) => {
     const state = generateState();
