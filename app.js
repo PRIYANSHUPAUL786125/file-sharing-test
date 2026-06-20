@@ -17,10 +17,7 @@ const allowedOrigins = [
   "https://project-5tw7a-plydefleu-paul12345.vercel.app",
 ];
 
-app.use(cors({
-  origin: allowedOrigins,
-  credentials: true,
-}));
+
 app.use(cors({
     origin:allowedOrigins,
     credentials:true,
