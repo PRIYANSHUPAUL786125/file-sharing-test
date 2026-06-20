@@ -20,7 +20,7 @@ const COOKIE_SETTINGS = {
     secure: true,
     sameSite: "none",
     path: "/",
-}
+};
 const loginRoute = asyncHandler(async (req, res) => {
     const state = generateState();
     const codeVerifier = generateCodeVerifier();
@@ -35,17 +35,16 @@ const loginRoute = asyncHandler(async (req, res) => {
 
     res.redirect(url.toString());
 });
-;
 const callbackFunction = asyncHandler(async (req, res) => {
     const code = req.query.code;
     const state = req.query.state;
 
     const storedState = req.cookies.google_oauth_state;
     const storedCodeVerifier = req.cookies.google_code_verifier;
-console.log("cookies:", req.cookies);
-console.log("storedState:", storedState);
-console.log("storedCodeVerifier:", storedCodeVerifier);
-console.log("incomingState:", state);
+    console.log("cookies:", req.cookies);
+    console.log("storedState:", storedState);
+    console.log("storedCodeVerifier:", storedCodeVerifier);
+    console.log("incomingState:", state);
     if (
         !code ||
         !state ||
@@ -79,16 +78,16 @@ console.log("incomingState:", state);
         });
         isNewUser = true;
     }
-
+    console.log("oauth successful");
     const tokenPayload = { userId: user._id, email: user.email };
     const { accessToken, refreshToken } = generateTokenPair(tokenPayload);
 
     user.refreshToken = refreshToken;
     await user.save();
-
+    console.log("clearing cookie");
     res.clearCookie("google_oauth_state", COOKIE_SETTINGS);
     res.clearCookie("google_code_verifier", COOKIE_SETTINGS);
-
+    console.log("adding access and refresh token");
     res.cookie("refreshToken", refreshToken, COOKIE_SETTINGS);
     res.cookie("accessToken", accessToken, COOKIE_SETTINGS);
     res.redirect(process.env.REACT_URL);
@@ -149,8 +148,6 @@ const logoutController = asyncHandler(async (req, res) => {
             );
         }
     }
-
-   
 
     res.clearCookie("refreshToken", COOKIE_SETTINGS);
     res.clearCookie("accessToken", COOKIE_SETTINGS);
